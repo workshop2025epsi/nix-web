@@ -1,3 +1,3 @@
 export default function Page() {
-    return <main>Contenue principal</main>;
+    return <>Mettre ici le design Figma d'un site de restaurant</>;
 }

@@ -1,18 +1,5 @@
 "use client";
-import { Link } from "@/components/ui/link";
-import { Menu, MenuContent, MenuItem } from "@/components/ui/menu";
-import {
-    Navbar,
-    NavbarGap,
-    NavbarItem,
-    NavbarMobile,
-    type NavbarProps,
-    NavbarProvider,
-    NavbarSection,
-    NavbarSpacer,
-    NavbarStart,
-    NavbarTrigger,
-} from "@/components/ui/navbar";
+import { type NavbarProps } from "@/components/ui/navbar";
 
 const categories = [
     {
@@ -68,59 +55,5 @@ const categories = [
 ];
 
 export default function SiteNavbar(props: NavbarProps) {
-    return (
-        <NavbarProvider>
-            <Navbar {...props}>
-                <NavbarStart>
-                    <Link
-                        className="flex items-center gap-x-2 font-medium"
-                        aria-label="Goto documentation of Navbar"
-                        href="/docs/components/layouts/navbar"
-                    >
-                        <span>La bonne blanquette</span>
-                    </Link>
-                </NavbarStart>
-                <NavbarGap />
-                <NavbarSection>
-                    <NavbarItem href="#">Menu</NavbarItem>
-                    <NavbarItem href="#">Plats</NavbarItem>
-                    <Menu>
-                        <NavbarItem>Categories</NavbarItem>
-                        <MenuContent
-                            className="min-w-(--trigger-width) sm:min-w-56"
-                            items={categories}
-                        >
-                            {(item) => (
-                                <MenuItem id={item.id} textValue={item.label} href={item.url}>
-                                    {item.label}
-                                </MenuItem>
-                            )}
-                        </MenuContent>
-                    </Menu>
-                </NavbarSection>
-                <NavbarSpacer />
-            </Navbar>
-            <NavbarMobile>
-                <NavbarTrigger />
-                <NavbarSpacer />
-                <NavbarSection>
-                    <NavbarItem href="#">Menu</NavbarItem>
-                    <NavbarItem href="#">Plats</NavbarItem>
-                    <Menu>
-                        <NavbarItem>Categories</NavbarItem>
-                        <MenuContent
-                            className="min-w-(--trigger-width) sm:min-w-56"
-                            items={categories}
-                        >
-                            {(item) => (
-                                <MenuItem id={item.id} textValue={item.label} href={item.url}>
-                                    {item.label}
-                                </MenuItem>
-                            )}
-                        </MenuContent>
-                    </Menu>
-                </NavbarSection>
-            </NavbarMobile>
-        </NavbarProvider>
-    );
+    return <></>;
 }

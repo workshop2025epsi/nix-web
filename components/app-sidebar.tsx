@@ -1,282 +1,69 @@
 "use client";
 
-import { Avatar } from "@/components/ui/avatar";
 import { Link } from "@/components/ui/link";
-import {
-    Menu,
-    MenuContent,
-    MenuHeader,
-    MenuItem,
-    MenuSection,
-    MenuSeparator,
-    MenuTrigger,
-} from "@/components/ui/menu";
+import Image from "next/image"; // Correction de l'importation d'Image
+
 import {
     Sidebar,
     SidebarContent,
-    SidebarDisclosure,
-    SidebarDisclosureGroup,
-    SidebarDisclosurePanel,
-    SidebarDisclosureTrigger,
     SidebarFooter,
     SidebarHeader,
     SidebarItem,
     SidebarLabel,
-    SidebarLink,
     SidebarRail,
     SidebarSection,
     SidebarSectionGroup,
 } from "@/components/ui/sidebar";
-import {
-    IconArchiveFill,
-    IconArrowDownFill,
-    IconArrowUpFill,
-    IconBrandIntentui,
-    IconBuildingFill,
-    IconChevronsY,
-    IconCircleCheckFill,
-    IconCircleQuestionmarkFill,
-    IconClockFill,
-    IconCreditCardFill,
-    IconCube,
-    IconDashboardFill,
-    IconDotsHorizontal,
-    IconHashtagFill,
-    IconHeadphonesFill,
-    IconListBulletsFill,
-    IconLogout,
-    IconMessageFill,
-    IconNotesFill,
-    IconPackageFill,
-    IconPlus,
-    IconSettingsFill,
-    IconShieldFill,
-    IconShoppingBagFill,
-    IconTicketFill,
-} from "@intentui/icons";
+import { authClient } from "@/lib/auth/auth.client";
+import { sidebarMenus } from "@/resources/data";
+import UserMenu from "./user-menu";
+
+import { useTheme } from "next-themes"; // Importation de useTheme
+import { usePathname } from "next/navigation";
 
 export default function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+    const { data: session, isPending } = authClient.useSession();
+    const pathname = usePathname();
+    const { resolvedTheme } = useTheme(); // Utilisation de useTheme pour obtenir le thème actuel
+
+    // Choisir le logo en fonction du thème
+    const logoSrc = resolvedTheme === "dark" ? "/logo/logo-white.svg" : "/logo/logo-black.svg";
+
     return (
         <Sidebar {...props}>
-            <SidebarHeader>
+            <SidebarHeader className="p-0 mt-4">
                 <Link href="/docs/components/layouts/sidebar" className="flex items-center gap-x-2">
-                    <IconBrandIntentui className="size-8" />
                     <SidebarLabel className="font-medium">
-                        Intent <span className="text-muted-fg">UI</span>
+                        <Image
+                            src={logoSrc} // Utilisation de la source du logo en fonction du thème
+                            alt="Logo"
+                            width={120}
+                            height={6}
+                            className="mx-auto flex w-full h-12"
+                        />{" "}
+                        {/* Ajout des attributs alt, width et height */}
                     </SidebarLabel>
                 </Link>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarSectionGroup>
-                    <SidebarSection label="Overview">
-                        <SidebarItem tooltip="Overview" isCurrent href="#">
-                            <IconDashboardFill />
-                            <SidebarLabel>Overview</SidebarLabel>
-                        </SidebarItem>
-
-                        <SidebarItem tooltip="Orders">
-                            {({ isCollapsed, isFocused }) => (
-                                <>
-                                    <SidebarLink href="#">
-                                        <IconShoppingBagFill />
-                                        <SidebarLabel>Orders</SidebarLabel>
-                                    </SidebarLink>
-                                    {(!isCollapsed || isFocused) && (
-                                        <Menu>
-                                            <MenuTrigger
-                                                data-slot="menu-action-trigger"
-                                                aria-label="Manage"
-                                            >
-                                                <IconDotsHorizontal />
-                                            </MenuTrigger>
-                                            <MenuContent
-                                                popover={{
-                                                    offset: 0,
-                                                    placement: "right top",
-                                                }}
-                                            >
-                                                <MenuItem href="#new-order">
-                                                    <IconPlus />
-                                                    Create New Order
-                                                </MenuItem>
-                                                <MenuItem href="#view-all">
-                                                    <IconListBulletsFill />
-                                                    View All Orders
-                                                </MenuItem>
-                                                <MenuItem href="#pending-orders">
-                                                    <IconClockFill />
-                                                    Pending Orders
-                                                </MenuItem>
-                                                <MenuItem href="#completed-orders">
-                                                    <IconCircleCheckFill />
-                                                    Completed Orders
-                                                </MenuItem>
-                                                <MenuItem href="#export-orders">
-                                                    <IconArrowUpFill />
-                                                    Export Orders
-                                                </MenuItem>
-                                            </MenuContent>
-                                        </Menu>
-                                    )}
-                                </>
-                            )}
-                        </SidebarItem>
-                        <SidebarItem tooltip="Products">
-                            {({ isCollapsed, isFocused }) => (
-                                <>
-                                    <SidebarLink href="#">
-                                        <IconCube />
-                                        <SidebarLabel>Products</SidebarLabel>
-                                    </SidebarLink>
-                                    {(!isCollapsed || isFocused) && (
-                                        <Menu>
-                                            <MenuTrigger
-                                                data-slot="menu-action-trigger"
-                                                aria-label="Manage"
-                                            >
-                                                <IconDotsHorizontal />
-                                            </MenuTrigger>
-                                            <MenuContent
-                                                popover={{
-                                                    offset: 0,
-                                                    placement: "right top",
-                                                }}
-                                            >
-                                                <MenuItem href="#new-product">
-                                                    <IconPlus />
-                                                    Add New Product
-                                                </MenuItem>
-                                                <MenuItem href="#archive">
-                                                    <IconArchiveFill />
-                                                    Archive Product
-                                                </MenuItem>
-                                                <MenuItem href="#manage-categories">
-                                                    <IconHashtagFill />
-                                                    Manage Categories
-                                                </MenuItem>
-                                                <MenuItem href="#import">
-                                                    <IconArrowDownFill />
-                                                    Import Products
-                                                </MenuItem>
-                                                <MenuItem href="#export">
-                                                    <IconArrowUpFill />
-                                                    Export Products
-                                                </MenuItem>
-                                            </MenuContent>
-                                        </Menu>
-                                    )}
-                                </>
-                            )}
-                        </SidebarItem>
-                        <SidebarItem href="#" badge="4 Pending" tooltip="Payments">
-                            <IconCreditCardFill />
-                            <SidebarLabel>Payments</SidebarLabel>
-                        </SidebarItem>
+                    <SidebarSection>
+                        {sidebarMenus.base.map((item) => (
+                            <SidebarItem
+                                isCurrent={item.link === pathname}
+                                key={item.title}
+                                tooltip={item.title}
+                                href={item.link}
+                            >
+                                <item.icon data-slot="icon" />
+                                <SidebarLabel>{item.title}</SidebarLabel>
+                            </SidebarItem>
+                        ))}
                     </SidebarSection>
-
-                    <SidebarDisclosureGroup defaultExpandedKeys={[1]}>
-                        <SidebarDisclosure id={1}>
-                            <SidebarDisclosureTrigger>
-                                <IconDotsHorizontal />
-                                <SidebarLabel>Support</SidebarLabel>
-                            </SidebarDisclosureTrigger>
-                            <SidebarDisclosurePanel>
-                                <SidebarItem href="#" tooltip="Tickets">
-                                    <IconTicketFill />
-                                    <SidebarLabel>Tickets</SidebarLabel>
-                                </SidebarItem>
-                                <SidebarItem href="#" tooltip="Chat Support">
-                                    <IconMessageFill />
-                                    <SidebarLabel>Chat Support</SidebarLabel>
-                                </SidebarItem>
-                                <SidebarItem href="#" tooltip="FAQ">
-                                    <IconCircleQuestionmarkFill />
-                                    <SidebarLabel>FAQ</SidebarLabel>
-                                </SidebarItem>
-                                <SidebarItem href="#" tooltip="Documentation">
-                                    <IconNotesFill />
-                                    <SidebarLabel>Documentation</SidebarLabel>
-                                </SidebarItem>
-                            </SidebarDisclosurePanel>
-                        </SidebarDisclosure>
-                        <SidebarDisclosure id={2}>
-                            <SidebarDisclosureTrigger>
-                                <IconPackageFill />
-                                <SidebarLabel>Inventory</SidebarLabel>
-                            </SidebarDisclosureTrigger>
-                            <SidebarDisclosurePanel>
-                                <SidebarItem href="#" tooltip="Warehouse">
-                                    <IconBuildingFill />
-                                    <SidebarLabel>Warehouse</SidebarLabel>
-                                </SidebarItem>
-                                <SidebarItem href="#" tooltip="Stock Levels">
-                                    <SidebarLabel>Stock Levels</SidebarLabel>
-                                </SidebarItem>
-                                <SidebarItem href="#" tooltip="Shipping">
-                                    <SidebarLabel>Shipping</SidebarLabel>
-                                </SidebarItem>
-                            </SidebarDisclosurePanel>
-                        </SidebarDisclosure>
-                    </SidebarDisclosureGroup>
                 </SidebarSectionGroup>
             </SidebarContent>
-
             <SidebarFooter className="flex flex-row justify-between gap-4 group-data-[state=collapsed]:flex-col">
-                <Menu>
-                    <MenuTrigger
-                        className="flex w-full items-center justify-between"
-                        aria-label="Profile"
-                    >
-                        <div className="flex items-center gap-x-2">
-                            <Avatar
-                                className="size-8 *:size-8 group-data-[state=collapsed]:size-6 group-data-[state=collapsed]:*:size-6"
-                                isSquare
-                                src="https://intentui.com/images/avatar/cobain.jpg"
-                            />
-
-                            <div className="in-data-[collapsible=dock]:hidden text-sm">
-                                <SidebarLabel>Kurt Cobain</SidebarLabel>
-                                <span className="-mt-0.5 block text-muted-fg">kurt@domain.com</span>
-                            </div>
-                        </div>
-                        <IconChevronsY data-slot="chevron" />
-                    </MenuTrigger>
-                    <MenuContent
-                        className="in-data-[sidebar-collapsible=collapsed]:min-w-56 min-w-(--trigger-width)"
-                        placement="bottom right"
-                    >
-                        <MenuSection>
-                            <MenuHeader separator>
-                                <span className="block">Kurt Cobain</span>
-                                <span className="font-normal text-muted-fg">@cobain</span>
-                            </MenuHeader>
-                        </MenuSection>
-
-                        <MenuItem href="#dashboard">
-                            <IconDashboardFill />
-                            Dashboard
-                        </MenuItem>
-                        <MenuItem href="#settings">
-                            <IconSettingsFill />
-                            Settings
-                        </MenuItem>
-                        <MenuItem href="#security">
-                            <IconShieldFill />
-                            Security
-                        </MenuItem>
-                        <MenuSeparator />
-
-                        <MenuItem href="#contact">
-                            <IconHeadphonesFill />
-                            Customer Support
-                        </MenuItem>
-                        <MenuSeparator />
-                        <MenuItem href="#logout">
-                            <IconLogout />
-                            Log out
-                        </MenuItem>
-                    </MenuContent>
-                </Menu>
+                {!isPending && session?.user ? <UserMenu user={session.user} /> : <UserMenu />}
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

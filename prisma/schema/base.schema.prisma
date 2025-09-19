@@ -1,0 +1,42 @@
+model File {
+    id        Int    @id @default(autoincrement())
+    name      String
+    fileToken String @unique
+    fileSize  Int
+    extension String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    agent      Agent        @relation(fields: [agentId], references: [id], onDelete: Cascade)
+    agentId    Int
+    Transcript Transcript[]
+
+    @@map("files")
+}
+
+model Transcript {
+    id            Int    @id @default(autoincrement())
+    generatedName String
+    generatedText String @db.Text
+
+    createdAt DateTime @default(now())
+
+    file      File   @relation(fields: [fileToken], references: [fileToken], onDelete: Cascade)
+    fileToken String
+
+    @@map("transcripts")
+}
+
+model Agent {
+    id         Int    @id @default(autoincrement())
+    name       String
+    agentToken String @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    files File[]
+
+    @@map("agents")
+}

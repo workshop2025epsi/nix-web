@@ -40,7 +40,22 @@ const formatDate = (date: Date | string) => {
     });
 };
 
+const APIKeyGenerator = (prefix: string | undefined): string => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const keyLength = 64; // Adjusted to match the default length from the context
+    let key = '';
+
+    for (let i = 0; i < keyLength; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        key += characters[randomIndex];
+    }
+
+    return prefix ? `${prefix}_${key}` : key;
+};
+
+
 export {
+    APIKeyGenerator,
     capitalize,
     cn,
     delay,

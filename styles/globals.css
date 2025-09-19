@@ -169,31 +169,35 @@
         --chart-4: oklch(0.627 0.265 303.9);
         --chart-5: oklch(0.645 0.246 16.439);
     }
-  *, ::after, ::before, ::backdrop, ::file-selector-button {
-    border-color: var(--border, currentColor);
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--border, currentColor);
     }
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
     }
-  html {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-tap-highlight-color: transparent;
+    html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
     }
-  body {
-    background-color: var(--bg);
-    color: var(--fg);
+    body {
+        background-color: var(--bg);
+        color: var(--fg);
     }
-  ::-webkit-scrollbar {
-    width: 4px;
+    ::-webkit-scrollbar {
+        width: 4px;
     }
-  ::-webkit-scrollbar-track {
-    background: transparent;
+    ::-webkit-scrollbar-track {
+        background: transparent;
     }
-  ::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
+    ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
     }
 }
 
@@ -281,10 +285,13 @@
 }
 
 @theme inline {
+    --font-sans:
+        "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol", "Noto Color Emoji";
 
-    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-
-    --font-mono: "Geist Mono", 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace';
+    --font-mono:
+        "Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas",
+        '"Liberation Mono"', '"Courier New"', "monospace";
 
     --font-sans--font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 
@@ -429,26 +436,25 @@
     --radius-lg: var(--radius);
 
     --radius-xl: calc(var(--radius) + 4px);
-  @keyframes disclosure-expanded {
-  from {
-    height: 0;
+    @keyframes disclosure-expanded {
+        from {
+            height: 0;
         }
-  to {
-    height: var(--disclosure-height);
+        to {
+            height: var(--disclosure-height);
         }
     }
-  @keyframes disclosure-collapsed {
-  from {
-    height: var(--disclosure-height);
+    @keyframes disclosure-collapsed {
+        from {
+            height: var(--disclosure-height);
         }
-  to {
-    height: 0;
+        to {
+            height: 0;
         }
     }
 }
 
 :root {
-
     --radius: 0.625rem;
 
     --background: oklch(1 0 0);
@@ -501,7 +507,7 @@
 
     --sidebar-foreground: oklch(0.145 0 0);
 
-    --sidebar-primary: oklch(0.546 0.245 262.881);
+    --sidebar-primary: oklch(0.7 0.0073 277.11);
 
     --sidebar-primary-foreground: oklch(0.985 0 0);
 
@@ -589,7 +595,6 @@
 }
 
 .dark {
-
     --background: oklch(0.145 0 0);
 
     --foreground: oklch(0.985 0 0);
@@ -620,9 +625,9 @@
 
     --destructive: oklch(0.704 0.191 22.216);
 
-    --border: oklch(0.270 0.013 285.805);
+    --border: oklch(0.27 0.013 285.805);
 
-    --input: oklch(0.320 0.013 285.805);
+    --input: oklch(0.32 0.013 285.805);
 
     --ring: oklch(0.546 0.245 262.881);
 
@@ -640,7 +645,7 @@
 
     --sidebar-foreground: oklch(0.985 0 0);
 
-    --sidebar-primary: oklch(0.546 0.245 262.881);
+    --sidebar-primary: oklch(0.7 0.0073 277.11);
 
     --sidebar-primary-foreground: oklch(0.985 0 0);
 
@@ -664,7 +669,7 @@
 
     --secondary-fg: oklch(0.985 0 0);
 
-    --overlay: oklch(0.210 0.006 285.885);
+    --overlay: oklch(0.21 0.006 285.885);
 
     --overlay-fg: oklch(0.985 0 0);
 
@@ -700,7 +705,7 @@
 
     --danger-subtle-fg: oklch(0.704 0.191 22.216);
 
-    --navbar: oklch(0.190 0.006 285.885);
+    --navbar: oklch(0.19 0.006 285.885);
 
     --navbar-fg: oklch(0.985 0 0);
 
@@ -712,27 +717,27 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
 }
 
 @utility touch-target {
     position: relative;
-  &::before {
-    content: "";
-    position: absolute;
-    display: block;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-    min-height: 44px;
-    min-width: 44px;
-    z-index: 9999;
+    &::before {
+        content: "";
+        position: absolute;
+        display: block;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        min-height: 44px;
+        min-width: 44px;
+        z-index: 9999;
     }
 }

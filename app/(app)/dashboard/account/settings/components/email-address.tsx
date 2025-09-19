@@ -55,7 +55,6 @@ export default function EmailAddressForm({ user }: { user: User }) {
                         value={inputValues.email}
                         errorMessage={inputErrors.email}
                         isRequired
-                        isDisabled
                         className="md:w-[400px]"
                         placeholder="Enter your email address"
                         onChange={(v) => handleChange("email", v)}

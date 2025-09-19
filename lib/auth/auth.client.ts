@@ -1,4 +1,5 @@
 import {
+    apiKeyClient,
     customSessionClient
 } from "better-auth/client/plugins";
 
@@ -8,6 +9,7 @@ import { auth } from ".";
 const authClient = createAuthClient({
     plugins: [
         customSessionClient<typeof auth>(),
+        apiKeyClient()
     ],
 });
 

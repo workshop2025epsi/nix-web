@@ -8,7 +8,6 @@ import { Form } from "@/components/ui/form";
 import { authClient } from "@/lib/auth/auth.client";
 import { useForm } from "@/lib/utils/hooks/use-form";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod/v3";
 
@@ -19,31 +18,6 @@ const signInSchema = z.object({
 
 export default function SignInForm({ callbackURL = "/dashboard" }: { callbackURL?: string }) {
     const router = useRouter();
-    const [isConditionalMediationAvailable, setIsConditionalMediationAvailable] = useState(false);
-    const [isLoadingPasskey, setIsLoadingPasskey] = useState(false);
-    const [email, setEmail] = useState("");
-    const [showOTPModal, setShowOTPModal] = useState(false);
-
-    useEffect(() => {
-        let mounted = true;
-        async function checkConditionalMediation() {
-            if (
-                typeof window !== "undefined" &&
-                window.PublicKeyCredential &&
-                typeof window.PublicKeyCredential.isConditionalMediationAvailable === "function"
-            ) {
-                const supported =
-                    await window.PublicKeyCredential.isConditionalMediationAvailable();
-                if (mounted) {
-                    setIsConditionalMediationAvailable(supported);
-                }
-            }
-        }
-        checkConditionalMediation();
-        return () => {
-            mounted = false;
-        };
-    }, []);
 
     const { inputValues, inputErrors, handleChange, setError, handleSubmit, isLoading } = useForm({
         schema: signInSchema,
@@ -64,15 +38,8 @@ export default function SignInForm({ callbackURL = "/dashboard" }: { callbackURL
                     setError("email", "Email ou mot de passe incorrect");
                 },
                 onSuccess: (ctx) => {
-                    if (ctx.data.twoFactorRedirect) {
-                        toast.info(
-                            "Ce compte est protégé par une authentification à deux facteurs. Veuillez confirmer votre identité.",
-                        );
-                        setShowOTPModal(true);
-                    } else {
-                        toast.success("Vous avez été connecté avec succès !");
-                        router.push(callbackURL);
-                    }
+                    toast.success("Vous avez été connecté avec succès !");
+                    router.push(callbackURL);
                 },
             },
         );
@@ -94,7 +61,6 @@ export default function SignInForm({ callbackURL = "/dashboard" }: { callbackURL
                     placeholder="Entrez votre adresse email"
                     onChange={(v) => {
                         handleChange("email", v);
-                        setEmail(v);
                     }}
                 />
                 <TextField

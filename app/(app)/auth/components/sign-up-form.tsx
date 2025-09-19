@@ -6,15 +6,11 @@ import { TextField } from "@/components/ui/text-field";
 
 import { Form } from "@/components/ui/form";
 import { authClient } from "@/lib/auth/auth.client";
-import { delay } from "@/lib/utils/";
 import { useForm } from "@/lib/utils/hooks/use-form";
 import { Check, X } from "lucide-react";
-import Link from "next/link";
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { z } from "zod/v3";
-
-type Step = "nom" | "methode" | "final";
 
 const signUpSchema = z.object({
     firstname: z.string().min(2, { message: "Le prénom est requis" }),
@@ -38,8 +34,6 @@ export default function SignUpForm({ callbackURL = "/dashboard" }: { callbackURL
         initialValues: formValues,
     });
     const id = useId();
-    const [termsOpen, setTermsOpen] = useState(false);
-    const [termsAccepted, setTermsAccepted] = useState(false);
     const pendingFormData = useRef<typeof formValues | null>(null);
 
     const checkStrength = (pass: string) => {
@@ -87,15 +81,6 @@ export default function SignUpForm({ callbackURL = "/dashboard" }: { callbackURL
         }
     };
 
-    const handleAcceptTerms = async () => {
-        setTermsAccepted(true);
-        setTermsOpen(false);
-        if (pendingFormData.current) {
-            await submitSignUp(pendingFormData.current);
-            pendingFormData.current = null;
-        }
-    };
-
     const submitSignUp = async (data: typeof formValues) => {
         await authClient.signUp.email(
             {
@@ -111,28 +96,15 @@ export default function SignUpForm({ callbackURL = "/dashboard" }: { callbackURL
                         : setError("email", errorMessage);
                 },
                 onSuccess: async () => {
-                    toast.success("Email de vérification envoyé (ignoré en démo)");
-                    await delay(1000);
-                    if (typeof window !== "undefined") {
-                        window.location.replace(`/onboarding?callback=${callbackURL}`);
-                    }
+                    toast.success("Inscription terminée");
                 },
             },
         );
     };
 
-    const onSubmit = async (data: typeof formValues) => {
-        if (!termsAccepted) {
-            pendingFormData.current = data;
-            setTermsOpen(true);
-            return Promise.resolve();
-        }
-        await submitSignUp(data);
-    };
-
     return (
         <>
-            <Form onSubmit={handleSubmit(onSubmit)} className="space-y-3 w-full">
+            <Form onSubmit={handleSubmit(submitSignUp)} className="space-y-3 w-full">
                 <div className="grid gap-3 sm:grid-cols-2">
                     <TextField
                         name="firstname"
@@ -220,6 +192,7 @@ export default function SignUpForm({ callbackURL = "/dashboard" }: { callbackURL
                         ))}
                     </ul>
                 </div>
+
                 <Button
                     isDisabled={isLoading}
                     isPending={isLoading}
@@ -238,15 +211,6 @@ export default function SignUpForm({ callbackURL = "/dashboard" }: { callbackURL
                         </>
                     )}
                 </Button>
-                <div className="text-center">
-                    Vous avez déjà un compte ?{" "}
-                    <Link
-                        href={`/auth/sign-in${callbackURL ? `?callback=${encodeURIComponent(callbackURL)}` : ""}`}
-                        className="underline text-fg underline-offset-2"
-                    >
-                        Se connecter
-                    </Link>
-                </div>
             </Form>
         </>
     );
