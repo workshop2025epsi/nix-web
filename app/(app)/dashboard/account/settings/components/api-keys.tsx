@@ -52,14 +52,14 @@ const apiKeySchema = z.object({
 });
 
 const expirationOptions = [
-    { label: "1 Day", value: ms("1 day") / 1000 },
-    { label: "7 Days", value: ms("7 days") / 1000 },
-    { label: "30 Days", value: ms("30 days") / 1000 },
-    { label: "60 Days", value: ms("60 days") / 1000 },
-    { label: "90 Days", value: ms("90 days") / 1000 },
-    { label: "180 Days", value: ms("180 days") / 1000 },
-    { label: "1 Year", value: ms("365 days") / 1000 },
-    { label: "No Expiration", value: null },
+    { label: "1 Jour", value: ms("1 day") / 1000 },
+    { label: "7 Jours", value: ms("7 days") / 1000 },
+    { label: "30 Jours", value: ms("30 days") / 1000 },
+    { label: "60 Jours", value: ms("60 days") / 1000 },
+    { label: "90 Jours", value: ms("90 days") / 1000 },
+    { label: "180 Jours", value: ms("180 days") / 1000 },
+    { label: "1 An", value: ms("365 days") / 1000 },
+    { label: "Pas d'expiration", value: null },
 ];
 
 export default function APIKeysCard() {
@@ -86,7 +86,12 @@ export default function APIKeysCard() {
             try {
                 const response = await getApiKeys();
                 if (response.success && response.data) {
-                    setApiKeys(response.data);
+                    setApiKeys(
+                        response.data.map((key: any) => ({
+                            ...key,
+                            expireAt: key.expireAt ? new Date(key.expireAt) : null,
+                        })),
+                    );
                 } else {
                     toast.error("Échec du chargement des clés API.");
                 }
@@ -134,7 +139,7 @@ export default function APIKeysCard() {
             );
 
             if (response.success && response.data) {
-                setApiKeys([...apiKeys, response.data]);
+                setApiKeys([...apiKeys, { ...response.data, expireAt: response.data.expiresAt }]);
                 setGeneratedApiKey(response.data.key || "");
                 setShowApiKeyModal(true);
                 setOpen(false);
@@ -170,27 +175,29 @@ export default function APIKeysCard() {
     return (
         <div>
             <Modal>
-                <Button onPress={() => setOpen(true)}>Add API Key</Button>
+                <Button onPress={() => setOpen(true)}>Ajouter une clé API</Button>
                 <ModalContent isOpen={open} onOpenChange={setOpen}>
                     <ModalHeader>
-                        <ModalTitle>Create API Key</ModalTitle>
-                        <ModalDescription>Enter details to create a new API key.</ModalDescription>
+                        <ModalTitle>Créer une clé API</ModalTitle>
+                        <ModalDescription>
+                            Entrez les détails pour créer une nouvelle clé API.
+                        </ModalDescription>
                     </ModalHeader>
                     <ModalBody>
                         <Form className="flex flex-col gap-4">
                             <TextField
-                                label="Name"
-                                aria-label="Name"
-                                placeholder="Enter name"
+                                label="Nom"
+                                aria-label="Nom"
+                                placeholder="Entrez le nom"
                                 value={inputValues.name}
                                 onChange={(value) => handleChange("name", value)}
                                 isInvalid={!!inputErrors.name}
                                 errorMessage={inputErrors.name}
                             />
                             <TextField
-                                label="Prefix"
-                                aria-label="Prefix"
-                                placeholder="Enter prefix"
+                                label="Préfixe"
+                                aria-label="Préfixe"
+                                placeholder="Entrez le préfixe"
                                 value={inputValues.prefix}
                                 onChange={(value) => handleChange("prefix", value)}
                                 isInvalid={!!inputErrors.prefix}
@@ -199,7 +206,7 @@ export default function APIKeysCard() {
                             <Select
                                 label="Expiration"
                                 aria-label="Expiration"
-                                placeholder="Select Expiration"
+                                placeholder="Sélectionnez l'expiration"
                                 onSelectionChange={(value) => {
                                     const selectedOption = expirationOptions.find(
                                         (option) => option.value?.toString() === value,
@@ -285,11 +292,11 @@ export default function APIKeysCard() {
                     Chargement des clés API...
                 </div>
             ) : (
-                <Table aria-label="API Keys">
+                <Table aria-label="Clés API">
                     <TableHeader>
-                        <TableColumn isRowHeader>Name</TableColumn>
+                        <TableColumn isRowHeader>Nom</TableColumn>
                         <TableColumn>Clef secrète</TableColumn>
-                        <TableColumn>Status</TableColumn>
+                        <TableColumn>Statut</TableColumn>
                         <TableColumn>Actions</TableColumn>
                     </TableHeader>
                     <TableBody items={apiKeys}>
@@ -312,7 +319,7 @@ export default function APIKeysCard() {
                                             size="sm"
                                             onPress={() => handleDeleteApiKey(key.id)}
                                         >
-                                            Delete
+                                            Supprimer
                                         </Button>
                                     </TableCell>
                                 </TableRow>

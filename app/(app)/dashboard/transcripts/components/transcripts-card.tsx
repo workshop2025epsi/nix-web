@@ -49,9 +49,13 @@ export default function TranscriptsCard() {
         const loadTranscripts = async () => {
             setFetching(true);
             try {
-                const response: Response<Transcript[]> = await getTranscripts();
+                const response = await getTranscripts();
                 if (response.success && response.data) {
-                    setTranscripts(response.data);
+                    const transcriptsData: Transcript[] = response.data.map((item) => ({
+                        ...item,
+                        updatedAt: new Date(), // Ajout de la propriété manquante
+                    }));
+                    setTranscripts(transcriptsData);
                 } else {
                     toast.error(response.message || "Échec du chargement des transcriptions.");
                 }
@@ -115,7 +119,7 @@ export default function TranscriptsCard() {
                                             isDisabled={!transcript.generatedText}
                                             onPress={() => handleViewTranscript(transcript)}
                                         >
-                                            Voir le transcript
+                                            Voir la transcription
                                         </Button>
                                     </div>
                                 </TableCell>

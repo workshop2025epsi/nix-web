@@ -6,10 +6,8 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { getAuth } from "./auth.actions";
 
-// Utilisez process.cwd() au lieu de __dirname
 const uploadDirectory = path.join(process.cwd(), 'uploads');
 
-// Assurez-vous que le dossier existe
 if (!fs.existsSync(uploadDirectory)) {
     fs.mkdirSync(uploadDirectory, { recursive: true });
 }
@@ -63,7 +61,6 @@ export async function uploadRecord(file: FileInput, agentToken: string) {
         };
     }
 }
-
 
 export async function getRecords() {
     try {
@@ -212,6 +209,49 @@ export async function deleteRecord(fileToken: string) {
         return {
             data: null,
             message: "Failed to delete file",
+            success: false,
+        };
+    }
+}
+
+export async function downloadRecord(fileToken: string) {
+    try {
+        const fileRecord = await db.file.findUnique({
+            where: { fileToken: fileToken },
+        });
+
+        if (!fileRecord) {
+            return {
+                data: null,
+                message: "File not found",
+                success: false,
+            };
+        }
+
+        const filePath = path.join(uploadDirectory, fileToken);
+        if (!fs.existsSync(filePath)) {
+            return {
+                data: null,
+                message: "Physical file not found",
+                success: false,
+            };
+        }
+
+        const fileBuffer = fs.readFileSync(filePath);
+
+        return {
+            data: {
+                buffer: fileBuffer,
+                name: fileRecord.name,
+            },
+            message: "File downloaded successfully",
+            success: true,
+        };
+    } catch (error) {
+        console.error("Error downloading file", error);
+        return {
+            data: null,
+            message: "Failed to download file",
             success: false,
         };
     }

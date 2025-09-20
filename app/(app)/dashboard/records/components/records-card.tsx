@@ -20,7 +20,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Loader2, Play, Trash } from "lucide-react";
+import { Loader2, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -47,15 +47,23 @@ export default function RecordsCard() {
     const [isFetching, setFetching] = useState(false);
     const [isModalOpen, setModalOpen] = useState(false);
     const [transcriptText, setTranscriptText] = useState<string | null>(null);
-    const [isGenerating, setGenerating] = useState(false);
+    const [generatingFileToken, setGeneratingFileToken] = useState<string | null>(null);
+    const [existingTranscripts, setExistingTranscripts] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         const loadRecords = async () => {
             setFetching(true);
             try {
-                const response: Response<Record[]> = await getRecords();
+                const response = await getRecords();
                 if (response.success && response.data) {
                     setRecords(response.data);
+                    // Check for existing transcripts
+                    for (const record of response.data) {
+                        const transcriptResponse = await getTranscriptByFileToken(record.fileToken);
+                        if (transcriptResponse.success && transcriptResponse.data) {
+                            setExistingTranscripts((prev) => new Set([...prev, record.fileToken]));
+                        }
+                    }
                 } else {
                     toast.error(response.message || "Échec du chargement des enregistrements.");
                 }
@@ -83,7 +91,7 @@ export default function RecordsCard() {
 
     const handleGenerateTranscript = async (fileToken: string) => {
         setModalOpen(true);
-        setGenerating(true);
+        setGeneratingFileToken(fileToken);
         setTranscriptText(null);
 
         try {
@@ -97,7 +105,7 @@ export default function RecordsCard() {
             if (existingResponse.success && existingResponse.data) {
                 setTranscriptText(existingResponse.data.generatedText);
                 toast.success("Transcription chargée avec succès");
-                setGenerating(false);
+                setGeneratingFileToken(null);
                 return;
             }
 
@@ -106,6 +114,7 @@ export default function RecordsCard() {
                 await generateTranscript(fileToken);
             if (response.success && response.data) {
                 setTranscriptText(response.data.generatedText);
+                setExistingTranscripts((prev) => new Set([...prev, fileToken]));
                 toast.success("Transcription générée avec succès");
             } else {
                 toast.error(response.message || "Échec de la génération de la transcription.");
@@ -116,7 +125,36 @@ export default function RecordsCard() {
             toast.error("Une erreur s'est produite lors de la génération de la transcription.");
             setModalOpen(false);
         } finally {
-            setGenerating(false);
+            setGeneratingFileToken(null);
+        }
+    };
+
+    const handleDownloadRecord = async (fileToken: string) => {
+        try {
+            const response = await fetch(`/api/download`, {
+                method: "GET",
+                headers: {
+                    fileToken: fileToken,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur lors du téléchargement du fichier");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileToken;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            toast.success("Fichier téléchargé avec succès");
+        } catch (error) {
+            console.error("Erreur lors du téléchargement du fichier:", error);
+            toast.error("Une erreur s'est produite lors du téléchargement du fichier.");
         }
     };
 
@@ -183,8 +221,19 @@ export default function RecordsCard() {
                                         className="flex space-x-3"
                                         onPress={() => handleGenerateTranscript(record.fileToken)}
                                     >
-                                        <Play data-slot="icon" className="size-4" />
-                                        {isGenerating ? "Chargement..." : "Lancer la transcription"}
+                                        {generatingFileToken === record.fileToken
+                                            ? "Chargement..."
+                                            : existingTranscripts.has(record.fileToken)
+                                              ? "Voir la transcription"
+                                              : "Lancer la transcription"}
+                                    </Button>
+                                    <Button
+                                        intent="outline"
+                                        size="sm"
+                                        className="flex space-x-3"
+                                        onPress={() => handleDownloadRecord(record.fileToken)}
+                                    >
+                                        Télécharger
                                     </Button>
                                     <Button
                                         intent="danger"
@@ -206,7 +255,7 @@ export default function RecordsCard() {
                 <ModalHeader>
                     <ModalTitle>Résultat de la Transcription</ModalTitle>
                     <ModalDescription>
-                        {isGenerating ? (
+                        {generatingFileToken ? (
                             <div className="flex items-center gap-2">
                                 <Loader2 className="animate-spin" />
                                 {transcriptText
